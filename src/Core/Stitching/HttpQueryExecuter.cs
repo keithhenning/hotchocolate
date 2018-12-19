@@ -12,6 +12,48 @@ using Newtonsoft.Json.Serialization;
 
 namespace HotChocolate.Stitching
 {
+    public class RedirectQueryMiddleware
+    {
+        private readonly QueryDelegate _next;
+
+        public RedirectQueryMiddleware(QueryDelegate next)
+        {
+            _next = next ?? throw new ArgumentNullException(nameof(next));
+        }
+
+        public async Task InvokeAsync(IQueryContext context, HttpClient client)
+        {
+            StringContent message = CreateMessage(context.Request);
+
+            HttpResponseMessage response =
+                await client.PostAsync(string.Empty, message);
+            string json = await response.Content.ReadAsStringAsync();
+
+
+        }
+
+        private StringContent CreateMessage(
+            IReadOnlyQueryRequest originalRequest)
+        {
+            var remoteRquest = new ClientQueryRequest
+            {
+                Query = originalRequest.Query,
+                OperationName = originalRequest.OperationName,
+                Variables = originalRequest.VariableValues
+            };
+
+            return new StringContent(
+               JsonConvert.SerializeObject(remoteRquest,
+                   new JsonSerializerSettings
+                   {
+                       ContractResolver =
+                           new CamelCasePropertyNamesContractResolver()
+                   }),
+               Encoding.UTF8,
+               "application/json");
+        }
+    }
+
     public class HttpQueryExecuter
         : IQueryExecuter
     {

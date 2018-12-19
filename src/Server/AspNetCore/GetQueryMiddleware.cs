@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using HotChocolate.Execution;
+using HotChocolate.Utilities;
 using Newtonsoft.Json.Linq;
 
 #if ASPNETCLASSIC
@@ -57,8 +58,7 @@ namespace HotChocolate.AspNetCore
             return Task.FromResult(
                 new QueryRequest(request.Query, request.OperationName)
                 {
-                    VariableValues = QueryMiddlewareUtilities
-                        .ToDictionary(request.Variables),
+                    VariableValues = request.Variables.ToDictionary(),
                     Services = serviceProvider
                 });
         }

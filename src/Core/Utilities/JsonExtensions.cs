@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
-#if ASPNETCLASSIC
-namespace HotChocolate.AspNetClassic
-#else
-namespace HotChocolate.AspNetCore
-#endif
+namespace HotChocolate.Utilities
 {
-    internal static class QueryMiddlewareUtilities
+    public static class JObjectExtensions
     {
         public static Dictionary<string, object> ToDictionary(
             this JObject input)
@@ -21,6 +17,17 @@ namespace HotChocolate.AspNetCore
 
             return ToDictionary(
                 input.ToObject<Dictionary<string, JToken>>());
+        }
+
+        public static object ToObject(
+            this JToken input)
+        {
+            if (input == null)
+            {
+                return null;
+            }
+
+            return DeserializeValue(input);
         }
 
         private static Dictionary<string, object> ToDictionary(

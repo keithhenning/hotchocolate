@@ -23,8 +23,7 @@ namespace HotChocolate.AspNetCore.Subscriptions
 
             var request = new QueryRequest(payload.Query, payload.OperationName)
             {
-                VariableValues = QueryMiddlewareUtilities
-                    .ToDictionary(payload.Variables),
+                VariableValues = payload.Variables.ToDictionary(),
                 Services = context.HttpContext.CreateRequestServices()
             };
 
